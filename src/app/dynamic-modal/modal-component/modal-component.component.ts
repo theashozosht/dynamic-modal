@@ -42,4 +42,13 @@ export class ModalComponentComponent implements OnDestroy {
   }
 
   onDialogClicked(evt: MouseEvent) { evt.stopPropagation() }
+
+  async handleButtonClick(item: IModalSchemaButton) {
+    if (item.onClick != undefined) {
+      const result = await item.onClick();
+      if (result)
+        this.close();
+    }
+  }
+
 }
