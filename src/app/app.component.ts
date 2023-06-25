@@ -1,43 +1,42 @@
 import { Component, ComponentRef, ViewChild, ElementRef } from '@angular/core';
 import { Subject } from 'rxjs';
+import { ModalServiceService } from './dynamic-modal/modal-service/modal-service.service';
 import { DialogRef } from './dynamic-modal/modal-token/modal.ref';
 import { IModalSchema } from './dynamic-modal/types/modal.interface';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss']
+  styleUrls: ['./app.component.scss'],
+  providers: [ModalServiceService]
 })
 export class AppComponent {
-  @ViewChild('modal') modal: ElementRef | null= null;
-
-  public modalSchema: IModalSchema = {
-    content: '',
-    class: '',
+  private modalPayload: IModalSchema = {
+    title: 'This is a Header',
+    content: 'This text is displayed in the content of modal',
+    class: 'custom-class',
     icon: '',
     maxWidth: 700,
-    button: [],
-  };
-  public componentRef: ComponentRef<any> | null= null;
-  private readonly _onClose = new Subject<any>();
-  public onClose = this._onClose.asObservable();
-
-  constructor(private dialogRef: DialogRef) { }
-
-  ngOnDestroy() {
-    if (this.componentRef)
-      this.componentRef.destroy();
+    shouldClose: () => false,
+    button: [
+      {
+        class: 'btn-fill',
+        name: 'Confirm',
+        onClick: () => true,
+      },
+      {
+        class: 'btn-outline',
+        name: 'Close',
+        onClick: () => true,
+      }
+    ]
   }
 
-  onOverlayClicked(evt: any) {
-    if (this.modal && evt.srcElement.childNodes[0] ==  this.modal.nativeElement ) 
-      this.dialogRef.close();
+  constructor(private modalServiceService: ModalServiceService) {
+    this.modalServiceService.openModal(this.modalPayload)
   }
 
-  close() {
-    this._onClose.next(0);
+  showModal(): void {
+    this.modalServiceService.openModal(this.modalPayload)
   }
-
-  onDialogClicked(evt: MouseEvent) { evt.stopPropagation() }
-
 }
