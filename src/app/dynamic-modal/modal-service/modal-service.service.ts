@@ -6,7 +6,7 @@ import { DialogRef } from '../modal-token/modal.ref';
 
 @Injectable()
 export class ModalServiceService {
-  modalComponentRef: ComponentRef<ModalComponentComponent>
+  modalComponentRef!: ComponentRef<ModalComponentComponent>;
   private static isOpen = false; // handling multiple modals
   modalClosed = new EventEmitter<void>();
 
