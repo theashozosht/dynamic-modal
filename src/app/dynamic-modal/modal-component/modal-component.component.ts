@@ -10,7 +10,7 @@ import { DialogRef } from '../modal-token/modal.ref'
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ModalComponentComponent implements OnDestroy {
-  @ViewChild('modal') modal: ElementRef
+  @ViewChild('modal') modal!: ElementRef
 
   public modalSchema: IModalSchema = {
     content: '',
@@ -19,7 +19,7 @@ export class ModalComponentComponent implements OnDestroy {
     maxWidth: 700,
     button: [],
   };
-  public componentRef: ComponentRef<any>
+  public componentRef!: ComponentRef<any>
   private readonly _onClose = new Subject<any>();
   public onClose = this._onClose.asObservable();
 
@@ -32,13 +32,21 @@ export class ModalComponentComponent implements OnDestroy {
     }
   }
 
-  onOverlayClicked(evt: any) {
-    if (evt.srcElement.childNodes[0] == this.modal.nativeElement)
-      this.dialogRef.close();
+  async onOverlayClicked(evt: any) {
+    if (evt.srcElement.childNodes[0] == this.modal.nativeElement) {
+      if (this.modalSchema.shouldClose != null || this.modalSchema.shouldClose != undefined) {
+        const result = await this.modalSchema.shouldClose();
+        if (result) {
+          this.dialogRef.close();
+        }
+      } else {
+        this.dialogRef.close();
+      }
+    }
   }
 
   close() {
-    this._onClose.next();
+    this._onClose.next(0);
   }
 
   onDialogClicked(evt: MouseEvent) { evt.stopPropagation() }
